@@ -31,9 +31,9 @@ The API uses DTOs for clean data contracts:
 ## Database Configuration
 Edit `RestaurantAPI/appsettings.json`:
 - ConnectionStrings.DevConnection (example for SQL Express):
-  - `Server=localhost\SQLEXPRESS;Database=RestaurantDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;`
+  - `Server=localhost\\SQLEXPRESS;Database=RestaurantDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;`
 - Example for LocalDB:
-  - `Server=(localdb)\MSSQLLocalDB;Database=RestaurantDB;Trusted_Connection=True;MultipleActiveResultSets=True;`
+  - `Server=(localdb)\\MSSQLLocalDB;Database=RestaurantDB;Trusted_Connection=True;MultipleActiveResultSets=True;`
 
 
 ## QUICK START GUIDE
@@ -217,6 +217,23 @@ public class OrderDetailCreateDto {
 - Press F5 or `dotnet run`
 - Open Swagger at the printed URL and exercise endpoints
 
+## Cloud deployment Steps (Terraform + Azure Container Apps)
+- Overview:
+  - Infrastructure as Code with Terraform (terraform folder). Creates: Resource Group, Log Analytics Workspace (PerGB2018, 30-day retention), Azure Container Registry (Basic), Container Apps Environment, and a Container App with public ingress.
+  - Security: Container App uses a system-assigned managed identity; Terraform grants it AcrPull on the ACR. No ACR admin creds in code.
+  - Cost: App runs with 0.25 vCPU / 0.5Gi and scales to zero when idle; ACR Basic; minimal Log Analytics retention.
+  - Networking: External ingress on port 8080; traffic routes 100% to latest revision.
+  - Files: `main.tf` (resources), `variables.tf` (names/region/image), `outputs.tf` (app URL, swagger URL).
+- Steps:
+  1. Install Azure CLI and login: `az login`
+  2. Choose a unique ACR name and set it in `terraform/variables.tf` (or pass `-var="acr_name=..."`)
+  3. Deploy infra: `cd terraform && terraform init && terraform apply`
+  4. Build & push image: `az acr login --name <acr>` then `docker build -t restaurant-api:latest . && docker tag restaurant-api:latest <acr>.azurecr.io/restaurant-api:latest && docker push <acr>.azurecr.io/restaurant-api:latest`
+  5. Get URL: `terraform output -raw app_url` (and `swagger_url`)
+- Update workflow:
+  - Tag a new image (e.g., `v1`, `v2`) and push, then update `image_tag` in `variables.tf` or pass `-var="image_tag=..."` and run `terraform apply` to create a new revision.
+- Cleanup:
+  - `terraform destroy` to remove all cloud resources and avoid charges.
 
 ## CHALLENGES / TROUBLESHOOTING
 - "dotnet-ef not found":
@@ -234,6 +251,6 @@ public class OrderDetailCreateDto {
   - If migrations are inconsistent, remove bad ones and recreate:
     - `dotnet ef migrations remove` (repeat until clean) or delete the `Migrations` folder (dev only), then add `InitialCreate` again.
 
-## NOTES
-- Project targets C# 13 / .NET 9.
-- Non-nullable strings in entities should be provided values when creating records (or mark them `required`/provide defaults).
+ - Challenges With Terraform: provider schema differences (ingress traffic_weight required, configuration block unsupported in current provider), ACR global name uniqueness, Azure CLI installation on Windows/GitBash missing.
+
+
