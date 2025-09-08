@@ -1,6 +1,6 @@
 # RestaurantAPI (.NET 9 + EF Core + SQL Server)
 
-A REST API for a restaurant domain: Customers, FoodItems, Orders (OrderMasters/OrderDetails). 
+A production‑ready REST API built with .NET 9 and ASP.NET Core Web API, designed to manage customers, menu items, and orders (including master/detail relationships) in a restaurant domain. Implements Entity Framework Core with SQL Server for robust data persistence, and exposes clean, documented endpoints via Swagger UI. The solution supports containerization with Docker and infrastructure automation using Terraform for deployment to Azure Container Apps and Azure Container Registry. Built with clean DTO patterns, modular controllers, and a focus on scalability, maintainability, and integration readiness — making it equally suited for local development, enterprise environments, or cloud‑native deployments.
 
 ## Tech stack
 - .NET 9 SDK
@@ -75,44 +75,39 @@ From the project directory (`RestaurantAPI`):
 ## DO IT YOURSELF GUIDE, STEP BY STEP (Visual Studio 2022)
 These steps work for either the "ASP.NET Core Web API" template or the "ASP.NET Core Web App (Model-View-Controller)" template. This project uses API controllers; the Web API template is recommended.
 
-1) Create the solution and project
-- File > New > Project > ASP.NET Core Web API
-- Framework: .NET 9
-- Enable Use controllers; Enable OpenAPI support
+1) **Create the solution and project**
+   - File > New > Project > ASP.NET Core Web API
+   - Framework: .NET 9, Enable controllers + OpenAPI support
 
-2) Add EF Core packages
-- Project > Manage NuGet Packages
-  - Install `Microsoft.EntityFrameworkCore.SqlServer`
-  - Install `Microsoft.EntityFrameworkCore.Design`
+2) **Add EF Core packages** via NuGet Package Manager:
+   - `Microsoft.EntityFrameworkCore.SqlServer`
+   - `Microsoft.EntityFrameworkCore.Design`
 
-3) Add the connection string
-- In `appsettings.json` add:
-```
+3) **Add connection string** to `appsettings.json`:
+```json
 "ConnectionStrings": {
   "DevConnection": "Server=localhost\\SQLEXPRESS;Database=RestaurantDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;"
 }
 ```
 
-4) Create entity classes (Models folder)
-- Customer
-```
+4) **Create entity classes** (Models folder):
+```csharp
+// Customer.cs
 public class Customer {
   [Key] public int CustomerID { get; set; }
   [Column(TypeName = "nvarchar(100)")][Required]
   public string CustomerName { get; set; } = string.Empty;
   public virtual ICollection<OrderMaster> Orders { get; set; } = new List<OrderMaster>();
 }
-```
-- FoodItem
-```
+
+// FoodItem.cs
 public class FoodItem {
   [Key] public int FoodItemId { get; set; }
   [Column(TypeName = "nvarchar(100)")] public string FoodItemName { get; set; } = string.Empty;
   public decimal Price { get; set; }
 }
-```
-- OrderMaster
-```
+
+// OrderMaster.cs
 public class OrderMaster {
   [Key] public long OrderMasterId { get; set; }
   [Column(TypeName = "nvarchar(75)")] public string OrderNumber { get; set; } = string.Empty;
@@ -123,9 +118,8 @@ public class OrderMaster {
   public List<OrderDetail> OrderDetails { get; set; } = new();
   [NotMapped] public string DeletedOrderItemIds { get; set; } = string.Empty;
 }
-```
-- OrderDetail
-```
+
+// OrderDetail.cs
 public class OrderDetail {
   [Key] public long OrderDetailId { get; set; }
   public long OrderMasterId { get; set; }
@@ -136,30 +130,28 @@ public class OrderDetail {
 }
 ```
 
-5) Create the DbContext (Models/RestaurantDbContext.cs)
-```
+5) **Create DbContext** (Models/RestaurantDbContext.cs):
+```csharp
 public class RestaurantDbContext : DbContext {
   public RestaurantDbContext(DbContextOptions<RestaurantDbContext> options) : base(options) {}
   public DbSet<Customer> Customers => Set<Customer>();
   public DbSet<FoodItem> FoodItems => Set<FoodItem>();
   public DbSet<OrderMaster> OrderMasters => Set<OrderMaster>();
   public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
+  
   protected override void OnModelCreating(ModelBuilder modelBuilder) {
+    // Relationships and constraints
     modelBuilder.Entity<OrderMaster>()
-      .HasOne(om => om.Customer)
-      .WithMany(c => c.Orders)
-      .HasForeignKey(om => om.CustomerId)
-      .OnDelete(DeleteBehavior.Restrict);
+      .HasOne(om => om.Customer).WithMany(c => c.Orders)
+      .HasForeignKey(om => om.CustomerId).OnDelete(DeleteBehavior.Restrict);
     modelBuilder.Entity<OrderDetail>()
-      .HasOne(od => od.FoodItem)
-      .WithMany()
-      .HasForeignKey(od => od.FoodItemId)
-      .OnDelete(DeleteBehavior.Restrict);
+      .HasOne(od => od.FoodItem).WithMany()
+      .HasForeignKey(od => od.FoodItemId).OnDelete(DeleteBehavior.Restrict);
     modelBuilder.Entity<OrderDetail>()
-      .HasOne<OrderMaster>()
-      .WithMany(om => om.OrderDetails)
-      .HasForeignKey(od => od.OrderMasterId)
-      .OnDelete(DeleteBehavior.Cascade);
+      .HasOne<OrderMaster>().WithMany(om => om.OrderDetails)
+      .HasForeignKey(od => od.OrderMasterId).OnDelete(DeleteBehavior.Cascade);
+    
+    // Decimal precision
     modelBuilder.Entity<FoodItem>().Property(f => f.Price).HasColumnType("decimal(18,2)");
     modelBuilder.Entity<OrderMaster>().Property(om => om.GTotal).HasColumnType("decimal(18,2)");
     modelBuilder.Entity<OrderDetail>().Property(od => od.FoodItemPrice).HasColumnType("decimal(18,2)");
@@ -167,40 +159,36 @@ public class RestaurantDbContext : DbContext {
 }
 ```
 
-6) Register DbContext (Program.cs)
-```
+6) **Register DbContext** in Program.cs:
+```csharp
 builder.Services.AddDbContext<RestaurantDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
 
-// after app = builder.Build();
+// Auto-migrate on startup (after app = builder.Build())
 using (var scope = app.Services.CreateScope()) {
   var db = scope.ServiceProvider.GetRequiredService<RestaurantDbContext>();
   db.Database.Migrate();
 }
 ```
 
-7) Add controllers (Controllers folder)
-- FoodItemController (basic CRUD)
-- CustomerController (GET list)
+7) **Add controllers** (Controllers folder): FoodItemController (CRUD), CustomerController (GET list)
 
-8) Create DTOs (DTOs folder)
-- CustomerCreateDto
-```
+8) **Create DTOs** (DTOs folder):
+```csharp
+// CustomerCreateDto.cs
 public class CustomerCreateDto {
   [Required] public string CustomerName { get; set; } = string.Empty;
   public List<OrderCreateDto>? Orders { get; set; }
 }
-```
-- OrderCreateDto
-```
+
+// OrderCreateDto.cs
 public class OrderCreateDto {
   [Required] public string OrderNumber { get; set; } = string.Empty;
   public string PMethod { get; set; } = string.Empty;
   public List<OrderDetailCreateDto> OrderDetails { get; set; } = new();
 }
-```
-- OrderDetailCreateDto
-```
+
+// OrderDetailCreateDto.cs
 public class OrderDetailCreateDto {
   public int FoodItemId { get; set; }
   public int Quantity { get; set; }
@@ -208,14 +196,11 @@ public class OrderDetailCreateDto {
 }
 ```
 
-9) Add and apply migrations
-- Tools > NuGet Package Manager > Package Manager Console
-  - `Add-Migration InitialCreate -Context RestaurantDbContext`
-  - `Update-Database -Context RestaurantDbContext`
+9) **Generate and apply migrations** (Package Manager Console):
+   - `Add-Migration InitialCreate -Context RestaurantDbContext`
+   - `Update-Database -Context RestaurantDbContext`
 
-10) Run and test
-- Press F5 or `dotnet run`
-- Open Swagger at the printed URL and exercise endpoints
+10) **Run and test**: Press F5 or `dotnet run`, then open Swagger at the printed URL
 
 ## Cloud deployment Steps (Terraform + Azure Container Apps)
 - Overview:
@@ -234,6 +219,31 @@ public class OrderDetailCreateDto {
   - Tag a new image (e.g., `v1`, `v2`) and push, then update `image_tag` in `variables.tf` or pass `-var="image_tag=..."` and run `terraform apply` to create a new revision.
 - Cleanup:
   - `terraform destroy` to remove all cloud resources and avoid charges.
+
+## Security Issues Fixed Optimization! 🛡️
+
+#### 🔴 **Issues Found:**
+- `appsettings.json` - Contained database connection strings (SENSITIVE)
+- `appsettings.Development.json` - Contained development settings (SENSITIVE)
+
+#### ✅ **Actions Taken:**
+- Removed sensitive files from git tracking
+- Created template files (`appsettings.template.json`, `appsettings.Development.template.json`)
+- Updated `.gitignore` to allow template files while excluding actual config files
+- Committed the security improvements
+
+#### ✅ **Files Safely Tracked:**
+- `terraform/main.tf` ✅ (Infrastructure code - safe)
+- `terraform/variables.tf` ✅ (Variable definitions - safe)
+- `terraform/outputs.tf` ✅ (Output definitions - safe)
+- `terraform/.terraform.lock.hcl` ✅ (Dependency versions - safe)
+
+#### ✅ **Files Properly Ignored:**
+- `terraform/terraform.tfstate` ✅ (Contains sensitive resource data)
+- `terraform/terraform.tfstate.backup` ✅ (Backup of sensitive data)
+- `RestaurantAPI/appsettings.json` ✅ (Now ignored)
+- `RestaurantAPI/appsettings.Development.json` ✅ (Now ignored)
+
 
 ## CHALLENGES / TROUBLESHOOTING
 - "dotnet-ef not found":
@@ -254,3 +264,11 @@ public class OrderDetailCreateDto {
  - Challenges With Terraform: provider schema differences (ingress traffic_weight required, configuration block unsupported in current provider), ACR global name uniqueness, Azure CLI installation on Windows/GitBash missing.
 
 
+
+
+# SCREENSHOTS
+![Docker Compose](image.png)
+![Azure Container App](image-1.png)
+![Schema](image-2.png)
+![Swagger UI](image-3.png)
+![200 OK Response](image-4.png)
