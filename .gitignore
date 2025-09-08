@@ -17,6 +17,8 @@ obj/
 # Contains DB connection strings / secrets
 RestaurantAPI/appsettings.json
 RestaurantAPI/appsettings.*.json
+# Allow template files
+!RestaurantAPI/appsettings.*.template.json
 
 # Launch settings can contain env vars/URLs
 RestaurantAPI/Properties/launchSettings.json
