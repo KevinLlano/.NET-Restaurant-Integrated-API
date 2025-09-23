@@ -71,7 +71,34 @@ From the project directory (`RestaurantAPI`):
 - Orders
   - Explore in Swagger if `OrderController` is present.
 
-  
+
+## Authentication (JWT demo)
+This project includes a simple JWT demo to protect write operations. It is intended for learning and testing only.
+
+- Token endpoint (demo):
+  - POST /api/auth/token
+  - Body: { "username": "admin", "password": "password" }
+  - Response: { "token": "<jwt>" }
+- Demo credentials (hardcoded for the sample project):
+  - username: admin
+  - password: password
+- How to use the token:
+  - Add an Authorization header to protected requests:
+    - Authorization: Bearer <token>
+  - In Swagger UI click "Authorize" and paste: Bearer <token>
+- Token details:
+  - Signed with the HMAC key in `appsettings.json` (Jwt:Key) for the demo
+  - Expires after 1 hour
+- Security notes (do this before production):
+  - Do not use hardcoded credentials or the dev key in production.
+  - Move the Jwt:Key to user-secrets for local development:
+    - `cd RestaurantAPI`
+    - `dotnet user-secrets init`
+    - `dotnet user-secrets set "Jwt:Key" "your-secret-key"`
+  - In production inject secrets via environment variables or a secret store (Azure Key Vault, AWS Secrets Manager, etc.)
+  - Replace the demo token issuer with a proper identity provider (Azure AD, Auth0, IdentityServer) for real deployments.
+
+
 ## DO IT YOURSELF GUIDE, STEP BY STEP (Visual Studio 2022)
 These steps work for either the "ASP.NET Core Web API" template or the "ASP.NET Core Web App (Model-View-Controller)" template. This project uses API controllers; the Web API template is recommended.
 
@@ -262,7 +289,6 @@ public class OrderDetailCreateDto {
     - `dotnet ef migrations remove` (repeat until clean) or delete the `Migrations` folder (dev only), then add `InitialCreate` again.
 
  - Challenges With Terraform: provider schema differences (ingress traffic_weight required, configuration block unsupported in current provider), ACR global name uniqueness, Azure CLI installation on Windows/GitBash missing.
-
 
 
 
