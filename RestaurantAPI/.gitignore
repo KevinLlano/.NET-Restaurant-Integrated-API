@@ -1,0 +1,87 @@
+# Visual Studio / .NET
+# -------------------------
+.vs/
+*.user
+*.suo
+bin/
+obj/
+*.userprefs
+
+# Rider/IDE
+.idea/
+*.sln.iml
+
+# -------------------------
+# App settings / secrets
+# -------------------------
+# Contains DB connection strings / secrets
+RestaurantAPI/appsettings.json
+RestaurantAPI/appsettings.*.json
+# Allow template files
+!RestaurantAPI/appsettings.*.template.json
+
+# Launch settings can contain env vars/URLs
+RestaurantAPI/Properties/launchSettings.json
+
+# User secrets / env files
+.env
+.env.*
+local.settings.json
+secrets.json
+
+# Azure service dependency files (can include connection details)
+RestaurantAPI/Properties/serviceDependencies*.json
+RestaurantAPI/Properties/ServiceDependencies/**
+
+# -------------------------
+# Terraform (state/vars/plans often contain secrets)
+# -------------------------
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+*.tfplan
+
+# -------------------------
+# Azure & publish profiles (include credentials)
+# -------------------------
+*.publishsettings
+*.azurePubxml
+RestaurantAPI/Properties/PublishProfiles/*.pubxml
+RestaurantAPI/Properties/PublishProfiles/*.pubxml.user
+
+# -------------------------
+# Docker
+# -------------------------
+docker-compose.override.yml
+docker-compose.override.*.yml
+
+# -------------------------
+# Certificates & Keys
+# -------------------------
+*.pfx
+*.p12
+*.key
+*.pem
+*.crt
+*.cer
+
+# -------------------------
+# Logs
+# -------------------------
+*.log
+logs/
+
+# Additional explicit ignores
+# Terraform state inside project terraform folder
+RestaurantAPI/terraform/**/*.tfstate
+RestaurantAPI/terraform/**/*.tfstate.*
+RestaurantAPI/terraform/.terraform/
+
+# Ensure appsettings templates remain tracked but real settings are ignored
+RestaurantAPI/appsettings.json
+RestaurantAPI/appsettings.*.json
+!RestaurantAPI/appsettings.*.template.json
