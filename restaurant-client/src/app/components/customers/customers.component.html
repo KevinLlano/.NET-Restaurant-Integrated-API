@@ -1,0 +1,53 @@
+<div class="customers-container">
+  <h2>Customers</h2>
+  
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading">
+    Loading...
+  </div>
+
+  <!-- Add new customer form -->
+  <div class="add-form">
+    <h3>Add New Customer</h3>
+    <div class="form-group">
+      <label for="customerName">Customer Name:</label>
+      <input 
+        id="customerName"
+        type="text" 
+        [(ngModel)]="newCustomer.customerName" 
+        placeholder="Enter customer name">
+    </div>
+    <button (click)="createCustomer()" [disabled]="loading">
+      Add Customer
+    </button>
+  </div>
+
+  <!-- Customers list -->
+  <div class="customers-list" *ngIf="!loading">
+    <h3>Current Customers ({{ customers.length }})</h3>
+    
+    <div *ngIf="customers.length === 0" class="no-items">
+      No customers found. Add some customers above!
+    </div>
+
+    <div *ngFor="let customer of customers" class="customer-card">
+      <div class="customer-info">
+        <h4>{{ customer.customerName }}</h4>
+        <p class="id">ID: {{ customer.customerID }}</p>
+      </div>
+      <div class="customer-actions">
+        <button 
+          class="delete-btn" 
+          (click)="deleteCustomer(customer.customerID)"
+          [disabled]="loading">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

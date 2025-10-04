@@ -1,0 +1,29 @@
+# Root-level ignore for the repository
+
+# Node / common
+/node_modules/
+
+# IDEs / editors
+/.vscode/
+/.vs/
+/.idea/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local environment files
+.env
+.env.*
+
+# Terraform state (anywhere in repo)
+**/*.tfstate
+**/*.tfstate.*
+.terraform/
+
+# Misc build outputs
+/dist/
+/out/

@@ -1,0 +1,64 @@
+<div class="food-items-container">
+  <h2>Food Items</h2>
+  
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading">
+    Loading...
+  </div>
+
+  <!-- Add new food item form -->
+  <div class="add-form">
+    <h3>Add New Food Item</h3>
+    <div class="form-group">
+      <label for="foodItemName">Food Item Name:</label>
+      <input 
+        id="foodItemName"
+        type="text" 
+        [(ngModel)]="newFoodItem.foodItemName" 
+        placeholder="Enter food item name">
+    </div>
+    <div class="form-group">
+      <label for="price">Price:</label>
+      <input 
+        id="price"
+        type="number" 
+        [(ngModel)]="newFoodItem.price" 
+        placeholder="Enter price"
+        min="0"
+        step="0.01">
+    </div>
+    <button (click)="createFoodItem()" [disabled]="loading">
+      Add Food Item
+    </button>
+  </div>
+
+  <!-- Food items list -->
+  <div class="food-items-list" *ngIf="!loading">
+    <h3>Current Food Items ({{ foodItems.length }})</h3>
+    
+    <div *ngIf="foodItems.length === 0" class="no-items">
+      No food items found. Add some items above!
+    </div>
+
+    <div *ngFor="let item of foodItems" class="food-item-card">
+      <div class="item-info">
+        <h4>{{ item.foodItemName }}</h4>
+        <p class="price">${{ item.price.toFixed(2) }}</p>
+        <p class="id">ID: {{ item.foodItemId }}</p>
+      </div>
+      <div class="item-actions">
+        <button 
+          class="delete-btn" 
+          (click)="deleteFoodItem(item.foodItemId)"
+          [disabled]="loading">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
