@@ -1,102 +1,157 @@
-# RestaurantAPI (.NET 9 + EF Core + SQL Server)
+# Restaurant Management API
 
-A production‑ready REST API built with .NET 9 and ASP.NET Core Web API, designed to manage customers, menu items, and orders (including master/detail relationships) in a restaurant domain. Implements Entity Framework Core with SQL Server for robust data persistence, and exposes clean, documented endpoints via Swagger UI. The solution supports containerization with Docker and infrastructure automation using Terraform for deployment to Azure Container Apps and Azure Container Registry. Built with clean DTO patterns, modular controllers, and a focus on scalability, maintainability, and integration readiness — making it equally suited for local development, enterprise environments, or cloud‑native deployments.
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-9.0-green)](https://docs.microsoft.com/en-us/aspnet/core/)
+[![Entity Framework](https://img.shields.io/badge/Entity_Framework_Core-9.0-purple)](https://docs.microsoft.com/en-us/ef/core/)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-Express-orange)](https://www.microsoft.com/en-us/sql-server)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue)](https://www.docker.com/)
+[![Azure](https://img.shields.io/badge/Azure-Container_Apps-blue)](https://azure.microsoft.com/en-us/services/container-apps/)
+[![Terraform](https://img.shields.io/badge/Terraform-Infrastructure_as_Code-purple)](https://www.terraform.io/)
 
-## Tech stack
-- .NET 9 SDK
-- ASP.NET Core Web API
-- EF Core (SqlServer, Design)
+A comprehensive, production-ready REST API for restaurant management, built with modern .NET technologies. This project demonstrates full-stack development skills, including backend API design, database management, authentication, containerization, and cloud deployment. Perfect for showcasing expertise in enterprise-level application development and DevOps practices.
+
+## 🚀 Project Overview
+
+This API manages restaurant operations including customer data, menu items, and order processing with master-detail relationships. It features clean architecture with DTOs, JWT authentication, Swagger documentation, and automated deployment to Azure using Terraform. The solution is designed for scalability, maintainability, and cloud-native deployments.
+
+### Key Highlights
+- **Modern Tech Stack**: .NET 9, ASP.NET Core Web API, Entity Framework Core
+- **Database**: SQL Server with robust entity relationships
+- **Authentication**: JWT-based security for protected operations
+- **Documentation**: Interactive Swagger UI
+- **Deployment**: Docker containerization and Azure Container Apps
+- **Infrastructure as Code**: Terraform for automated cloud provisioning
+- **Security**: Proper secrets management and configuration templates
+
+## 🛠️ Tech Stack
+
+- **Backend**: .NET 9 SDK, ASP.NET Core Web API
+- **Database**: Entity Framework Core with SQL Server
+- **Authentication**: JWT Bearer Tokens
+- **Documentation**: Swagger/OpenAPI
+- **Containerization**: Docker
+- **Cloud**: Azure Container Apps, Azure Container Registry
+- **IaC**: Terraform
+- **Development Tools**: Visual Studio 2022, Git
+
+## ✨ Features
+
+- **Customer Management**: CRUD operations for customer data
+- **Menu Management**: Full CRUD for food items with pricing
+- **Order Processing**: Master-detail order management with line items
+- **Authentication**: JWT token-based security
+- **API Documentation**: Interactive Swagger UI
+- **Database Migrations**: EF Core code-first approach
+- **Containerization**: Docker support for easy deployment
+- **Cloud Deployment**: Automated Azure infrastructure provisioning
+
+## 📋 Prerequisites
+
+- .NET 9 SDK (`dotnet --version`)
 - SQL Server (Express or LocalDB)
-- Swagger UI
-
-## Prerequisites
-- .NET 9 SDK installed (`dotnet --version`)
-- SQL Server running locally (SQLEXPRESS or LocalDB)
 - Git
 - EF Core tools: `dotnet tool install --global dotnet-ef`
+- Azure CLI (for cloud deployment)
+- Docker (optional, for containerization)
 
-## Repository layout
-- Solution root: `C:/Projects/RestaurantAPI`
-- Project: `RestaurantAPI/RestaurantAPI.csproj`
-- DbContext: `Models/RestaurantDbContext.cs`
-- Entities: `Customer`, `FoodItem`, `OrderMaster`, `OrderDetail`
-- DTOs: `CustomerCreateDto`, `OrderCreateDto`, `OrderDetailCreateDto`
+## 🏃‍♂️ Quick Start
 
-## DTOs (Data Transfer Objects)
-The API uses DTOs for clean data contracts:
-- **CustomerCreateDto**: For creating new customers with optional orders
-- **OrderCreateDto**: For creating new orders with order details
-- **OrderDetailCreateDto**: For individual order line items
+1. **Clone and navigate**:
+   ```bash
+   git clone https://github.com/KevinLlano/.NET-Restaurant-Integrated-API.git
+   cd .NET-Restaurant-Integrated-API/RestaurantAPI
+   ```
 
-## Database Configuration
-Edit `RestaurantAPI/appsettings.json`:
-- ConnectionStrings.DevConnection (example for SQL Express):
-  - `Server=localhost\\SQLEXPRESS;Database=RestaurantDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;`
-- Example for LocalDB:
-  - `Server=(localdb)\\MSSQLLocalDB;Database=RestaurantDB;Trusted_Connection=True;MultipleActiveResultSets=True;`
+2. **Setup database**:
+   ```bash
+   dotnet ef database update --context RestaurantDbContext
+   ```
 
+3. **Run the API**:
+   ```bash
+   dotnet run
+   ```
 
-## QUICK START GUIDE
-From the project directory (`RestaurantAPI`):
+4. **Access Swagger**: Open `http://localhost:5000/swagger` in your browser
 
-1) Restore and build
-- `dotnet restore`
-- `dotnet build`
+## 📖 API Endpoints
 
-2) Install packages/tools (if not already installed)
-- `dotnet add package Microsoft.EntityFrameworkCore.SqlServer`
-- `dotnet add package Microsoft.EntityFrameworkCore.Design`
-- `dotnet tool install --global dotnet-ef`
+### Customers
+- `GET /api/Customer` - List all customers
 
-3) Create the database schema
-- If migrations already exist (folder `Migrations` present):
-  - `dotnet ef database update --context RestaurantDbContext`
-- If starting fresh (no migrations):
-  - `dotnet ef migrations add InitialCreate --context RestaurantDbContext`
-  - `dotton ef database update --context RestaurantDbContext`
+### Food Items
+- `GET /api/FoodItem` - List all menu items
+- `GET /api/FoodItem/{id}` - Get specific item
+- `POST /api/FoodItem` - Create new item (authenticated)
+- `PUT /api/FoodItem/{id}` - Update item (authenticated)
+- `DELETE /api/FoodItem/{id}` - Delete item (authenticated)
 
-## Run
-- `dotnet run`
-- Swagger UI: open the URL printed in console (e.g., `http://localhost:5000/swagger`).
+### Orders
+- Explore available endpoints in Swagger UI
 
-## API quickstart
-- Customers
-  - `GET /api/Customer`
-- Food items
-  - `GET /api/FoodItem`
-  - `GET /api/FoodItem/{id}`
-  - `POST /api/FoodItem`
-  - `PUT /api/FoodItem/{id}`
-  - `DELETE /api/FoodItem/{id}`
-- Orders
-  - Explore in Swagger if `OrderController` is present.
+### Authentication
+- `POST /api/auth/token` - Get JWT token
+  - Body: `{"username": "admin", "password": "password"}`
 
+## 🔐 Authentication
 
-## Authentication (JWT demo)
-This project includes a simple JWT demo to protect write operations. It is intended for learning and testing only.
+The API includes JWT authentication to protect write operations. Use the demo credentials for testing:
+- **Username**: admin
+- **Password**: password
 
-- Token endpoint (demo):
-  - POST /api/auth/token
-  - Body: { "username": "admin", "password": "password" }
-  - Response: { "token": "<jwt>" }
-- Demo credentials (hardcoded for the sample project):
-  - username: admin
-  - password: password
-- How to use the token:
-  - Add an Authorization header to protected requests:
-    - Authorization: Bearer <token>
-  - In Swagger UI click "Authorize" and paste: Bearer <token>
-- Token details:
-  - Signed with the HMAC key in `appsettings.json` (Jwt:Key) for the demo
-  - Expires after 1 hour
-- Security notes (do this before production):
-  - Do not use hardcoded credentials or the dev key in production.
-  - Move the Jwt:Key to user-secrets for local development:
-    - `cd RestaurantAPI`
-    - `dotnet user-secrets init`
-    - `dotnet user-secrets set "Jwt:Key" "your-secret-key"`
-  - In production inject secrets via environment variables or a secret store (Azure Key Vault, AWS Secrets Manager, etc.)
-  - Replace the demo token issuer with a proper identity provider (Azure AD, Auth0, IdentityServer) for real deployments.
+Add the Bearer token to protected requests via the Authorization header.
+
+## 🏗️ Architecture
+
+### Database Schema
+- **Customer**: Customer information with order relationships
+- **FoodItem**: Menu items with pricing
+- **OrderMaster**: Order headers with customer references
+- **OrderDetail**: Order line items with quantities and prices
+
+### DTO Pattern
+Clean data transfer objects for API contracts:
+- `CustomerCreateDto`
+- `OrderCreateDto`
+- `OrderDetailCreateDto`
+
+### Clean Architecture
+- Controllers for API endpoints
+- Services for business logic
+- Models for data entities
+- DTOs for data transfer
+
+## ☁️ Cloud Deployment
+
+### Terraform Infrastructure
+Automated deployment to Azure Container Apps with:
+- Azure Container Registry for image storage
+- Container Apps Environment
+- Managed identity for secure access
+- Log Analytics for monitoring
+
+### Deployment Steps
+1. Configure Azure CLI: `az login`
+2. Update `terraform/variables.tf` with unique names
+3. Deploy: `cd terraform && terraform apply`
+4. Build and push Docker image
+5. Access via the generated URLs
+
+## 🛡️ Security & Best Practices
+
+- JWT authentication with proper token validation
+- Secrets management using user-secrets and environment variables
+- Configuration templates to avoid committing sensitive data
+- Proper error handling and input validation
+- CORS configuration for frontend integration
+
+## 📸 Screenshots
+
+![Docker Compose](image.png)
+![Azure Container App](image-1.png)
+![Schema](image-2.png)
+![Swagger UI](image-3.png)
+![200 OK Response](image-4.png)
 
 
 ## DO IT YOURSELF GUIDE, STEP BY STEP (Visual Studio 2022)
@@ -259,19 +314,6 @@ public class OrderDetailCreateDto {
 - Updated `.gitignore` to allow template files while excluding actual config files
 - Committed the security improvements
 
-#### ✅ **Files Safely Tracked:**
-- `terraform/main.tf` ✅ (Infrastructure code - safe)
-- `terraform/variables.tf` ✅ (Variable definitions - safe)
-- `terraform/outputs.tf` ✅ (Output definitions - safe)
-- `terraform/.terraform.lock.hcl` ✅ (Dependency versions - safe)
-
-#### ✅ **Files Properly Ignored:**
-- `terraform/terraform.tfstate` ✅ (Contains sensitive resource data)
-- `terraform/terraform.tfstate.backup` ✅ (Backup of sensitive data)
-- `RestaurantAPI/appsettings.json` ✅ (Now ignored)
-- `RestaurantAPI/appsettings.Development.json` ✅ (Now ignored)
-
-
 ## CHALLENGES / TROUBLESHOOTING
 - "dotnet-ef not found":
   - `dotnet tool install --global dotnet-ef` and restart terminal.
@@ -289,7 +331,6 @@ public class OrderDetailCreateDto {
     - `dotnet ef migrations remove` (repeat until clean) or delete the `Migrations` folder (dev only), then add `InitialCreate` again.
 
  - Challenges With Terraform: provider schema differences (ingress traffic_weight required, configuration block unsupported in current provider), ACR global name uniqueness, Azure CLI installation on Windows/GitBash missing.
-
 
 
 # SCREENSHOTS
