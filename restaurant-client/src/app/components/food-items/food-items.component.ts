@@ -18,7 +18,7 @@ export class FoodItemsComponent implements OnInit {
   
   // Form data for creating new food item
   newFoodItem: CreateFoodItem = {
-    foodItemName: '',
+    food_item_name: '',
     price: 0
   };
 
@@ -33,8 +33,9 @@ export class FoodItemsComponent implements OnInit {
     this.error = null;
     
     this.foodItemService.getFoodItems().subscribe({
-      next: (items) => {
-        this.foodItems = items;
+      next: (foodItems) => {
+        console.log('Food items API response:', foodItems);
+        this.foodItems = foodItems;
         this.loading = false;
       },
       error: (err) => {
@@ -46,7 +47,7 @@ export class FoodItemsComponent implements OnInit {
   }
 
   createFoodItem(): void {
-    if (!this.newFoodItem.foodItemName.trim() || this.newFoodItem.price <= 0) {
+    if (!this.newFoodItem.food_item_name.trim() || this.newFoodItem.price <= 0) {
       this.error = 'Please provide valid food item name and price.';
       return;
     }
@@ -56,8 +57,13 @@ export class FoodItemsComponent implements OnInit {
 
     this.foodItemService.createFoodItem(this.newFoodItem).subscribe({
       next: (createdItem) => {
-        this.foodItems.push(createdItem);
-        this.newFoodItem = { foodItemName: '', price: 0 };
+        console.log('Created food item:', createdItem);
+        // Supabase returns an array with the created item
+        const item = Array.isArray(createdItem) ? createdItem[0] : createdItem;
+        if (item) {
+          this.foodItems.push(item);
+        }
+        this.newFoodItem = { food_item_name: '', price: 0 };
         this.loading = false;
       },
       error: (err) => {
@@ -78,7 +84,7 @@ export class FoodItemsComponent implements OnInit {
 
     this.foodItemService.deleteFoodItem(id).subscribe({
       next: () => {
-        this.foodItems = this.foodItems.filter(item => item.foodItemId !== id);
+        this.foodItems = this.foodItems.filter(item => item.food_item_id !== id);
         this.loading = false;
       },
       error: (err) => {

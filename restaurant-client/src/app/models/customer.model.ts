@@ -1,8 +1,8 @@
 export interface Customer {
-  customerID: number;
-  customerName: string;
+  customer_id: number;
+  customer_name: string;
 }
 
 export interface CreateCustomer {
-  customerName: string;
+  customer_name: string;
 }

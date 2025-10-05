@@ -1,10 +1,10 @@
 .login-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  align-items: flex-start;
+  min-height: auto;
   background-color: #f8f9fa;
-  padding: 20px;
+  padding: 2rem 20px;
 }
 
 .login-card {
@@ -97,7 +97,7 @@
 
   p {
     margin: 8px 0;
-    font-size: 14px;
+    font-size: 18px;
     color: #666;
 
     &:first-child {

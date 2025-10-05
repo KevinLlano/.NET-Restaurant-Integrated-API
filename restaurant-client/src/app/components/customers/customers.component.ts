@@ -18,7 +18,7 @@ export class CustomersComponent implements OnInit {
   
   // Form data for creating new customer
   newCustomer: CreateCustomer = {
-    customerName: ''
+    customer_name: ''
   };
 
   constructor(private customerService: CustomerService) {}
@@ -33,6 +33,7 @@ export class CustomersComponent implements OnInit {
     
     this.customerService.getCustomers().subscribe({
       next: (customers) => {
+        console.log('Customers API response:', customers);
         this.customers = customers;
         this.loading = false;
       },
@@ -45,7 +46,7 @@ export class CustomersComponent implements OnInit {
   }
 
   createCustomer(): void {
-    if (!this.newCustomer.customerName.trim()) {
+    if (!this.newCustomer.customer_name.trim()) {
       this.error = 'Please provide a valid customer name.';
       return;
     }
@@ -55,8 +56,13 @@ export class CustomersComponent implements OnInit {
 
     this.customerService.createCustomer(this.newCustomer).subscribe({
       next: (createdCustomer) => {
-        this.customers.push(createdCustomer);
-        this.newCustomer = { customerName: '' };
+        console.log('Created customer:', createdCustomer);
+        // Supabase returns an array with the created customer
+        const customer = Array.isArray(createdCustomer) ? createdCustomer[0] : createdCustomer;
+        if (customer) {
+          this.customers.push(customer);
+        }
+        this.newCustomer = { customer_name: '' };
         this.loading = false;
       },
       error: (err) => {
@@ -77,7 +83,7 @@ export class CustomersComponent implements OnInit {
 
     this.customerService.deleteCustomer(id).subscribe({
       next: () => {
-        this.customers = this.customers.filter(customer => customer.customerID !== id);
+        this.customers = this.customers.filter(customer => customer.customer_id !== id);
         this.loading = false;
       },
       error: (err) => {

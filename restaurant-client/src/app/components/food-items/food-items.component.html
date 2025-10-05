@@ -19,7 +19,7 @@
       <input 
         id="foodItemName"
         type="text" 
-        [(ngModel)]="newFoodItem.foodItemName" 
+        [(ngModel)]="newFoodItem.food_item_name" 
         placeholder="Enter food item name">
     </div>
     <div class="form-group">
@@ -46,15 +46,15 @@
     </div>
 
     <div *ngFor="let item of foodItems" class="food-item-card">
-      <div class="item-info">
-        <h4>{{ item.foodItemName }}</h4>
+      <div class="item-info" *ngIf="item">
+        <h4>{{ item.food_item_name }}</h4>
         <p class="price">${{ item.price.toFixed(2) }}</p>
-        <p class="id">ID: {{ item.foodItemId }}</p>
+        <p class="id">ID: {{ item.food_item_id }}</p>
       </div>
-      <div class="item-actions">
+      <div class="item-actions" *ngIf="item">
         <button 
           class="delete-btn" 
-          (click)="deleteFoodItem(item.foodItemId)"
+          (click)="deleteFoodItem(item.food_item_id)"
           [disabled]="loading">
           Delete
         </button>

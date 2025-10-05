@@ -1,4 +1,4 @@
-# Restaurant Management API
+# Restaurant Management Platform
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/)
 [![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-9.0-green)](https://docs.microsoft.com/en-us/aspnet/core/)

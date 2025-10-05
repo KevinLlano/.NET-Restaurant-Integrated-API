@@ -19,7 +19,7 @@
       <input 
         id="customerName"
         type="text" 
-        [(ngModel)]="newCustomer.customerName" 
+        [(ngModel)]="newCustomer.customer_name" 
         placeholder="Enter customer name">
     </div>
     <button (click)="createCustomer()" [disabled]="loading">
@@ -36,14 +36,14 @@
     </div>
 
     <div *ngFor="let customer of customers" class="customer-card">
-      <div class="customer-info">
-        <h4>{{ customer.customerName }}</h4>
-        <p class="id">ID: {{ customer.customerID }}</p>
+      <div class="customer-info" *ngIf="customer">
+        <h4>{{ customer.customer_name }}</h4>
+        <p class="id">ID: {{ customer.customer_id }}</p>
       </div>
-      <div class="customer-actions">
+      <div class="customer-actions" *ngIf="customer">
         <button 
           class="delete-btn" 
-          (click)="deleteCustomer(customer.customerID)"
+          (click)="deleteCustomer(customer.customer_id)"
           [disabled]="loading">
           Delete
         </button>
