@@ -14,6 +14,9 @@ A comprehensive, production-ready REST API for restaurant management, built with
 
 This API manages restaurant operations including customer data, menu items, and order processing with master-detail relationships. It features clean architecture with DTOs, JWT authentication, Swagger documentation, and automated deployment to Azure using Terraform. The solution is designed for scalability, maintainability, and cloud-native deployments.
 
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 ### Key Highlights
 - **Modern Tech Stack**: .NET 9, ASP.NET Core Web API, Entity Framework Core
 - **Database**: SQL Server with robust entity relationships
@@ -137,7 +140,7 @@ Automated deployment to Azure Container Apps with:
 4. Build and push Docker image
 5. Access via the generated URLs
 
-## 🛡️ Security & Best Practices
+### 🛡️ Security & Best Practices
 
 - JWT authentication with proper token validation
 - Secrets management using user-secrets and environment variables
@@ -145,16 +148,8 @@ Automated deployment to Azure Container Apps with:
 - Proper error handling and input validation
 - CORS configuration for frontend integration
 
-## 📸 Screenshots
 
-![Docker Compose](image.png)
-![Azure Container App](image-1.png)
-![Schema](image-2.png)
-![Swagger UI](image-3.png)
-![200 OK Response](image-4.png)
-
-
-## DO IT YOURSELF GUIDE, STEP BY STEP (Visual Studio 2022)
+## DO IT YOURSELF GUIDE, STEP BY STEP TECHNICAL GUIDE
 These steps work for either the "ASP.NET Core Web API" template or the "ASP.NET Core Web App (Model-View-Controller)" template. This project uses API controllers; the Web API template is recommended.
 
 1) **Create the solution and project**
@@ -333,9 +328,3 @@ public class OrderDetailCreateDto {
  - Challenges With Terraform: provider schema differences (ingress traffic_weight required, configuration block unsupported in current provider), ACR global name uniqueness, Azure CLI installation on Windows/GitBash missing.
 
 
-# SCREENSHOTS
-![Docker Compose](image.png)
-![Azure Container App](image-1.png)
-![Schema](image-2.png)
-![Swagger UI](image-3.png)
-![200 OK Response](image-4.png)
