@@ -27,3 +27,5 @@ Thumbs.db
 # Misc build outputs
 /dist/
 /out/
+// Ignore prod env file that is built/created by CI from secrets
+restaurant-client/src/environments/environment.prod.ts

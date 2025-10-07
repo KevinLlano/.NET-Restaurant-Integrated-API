@@ -1,0 +1,52 @@
+name: Deploy Angular to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: restaurant-client/package-lock.json
+
+      - name: Create production environment file
+        run: |
+          mkdir -p ./restaurant-client/src/environments
+          cat > ./restaurant-client/src/environments/environment.prod.ts <<'EOF'
+          export const environment = {
+            production: true,
+            supabaseUrl: "${{ secrets.SUPABASE_URL }}",
+            supabaseKey: "${{ secrets.SUPABASE_ANON_KEY }}"
+          };
+          EOF
+
+      - name: Install dependencies
+        working-directory: ./restaurant-client
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: ./restaurant-client
+        run: npm run build -- --configuration production
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "restaurant-client"
+          api_location: ""
+          output_location: "dist/restaurant-client/browser"
